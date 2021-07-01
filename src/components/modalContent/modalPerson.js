@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Route, Link } from "react-router-dom";
-import sanityClient from "../client";
-
-import ModalPerson from "./modalContent/modalPerson.js";
+import sanityClient from "../../client";
 
 export default function ModalBox(props) {
     const [postData, setPostData] = useState(null);
     const [showModalnu, setShowModalnu] = useState(props.show);
     const [animationnu, setAnimationnu] = useState(props.animation);
     const [myId, setMyId] = useState(props.id);
-    const [categourie, setCategourie] = useState(props.cat);
+    const [hasImg, sethasImg] = useState(null);
+
+    const imageStyle = {};
 
     useEffect(() => {
         sanityClient
@@ -17,14 +17,20 @@ export default function ModalBox(props) {
                 `*[_type == 'person'] {
                     vorname,
                     nachname,
-                    position
+                    position,
+                    poster {
+                        asset->{
+                        url
                   }
+                }
+            }
                   `
             )
             .then((data) => setPostData(data))
             // .then((data) => console.log(data))
             .catch(console.error);
         console.log(postData);
+
         // document.querySelector("#test").addEventListener("click", showData);
     }, []);
 
@@ -42,21 +48,16 @@ export default function ModalBox(props) {
 
     return (
         <div>
-            <div className={`${animationnu} container-fluid position-absolute h-80 modalBox`}>
-                <div className="">
-                    <div className="closer" id="closer" onClick={() => close()}>
-                        <i class="bi bi-x-circle"></i>
+            {postData && (
+                <div>
+                    <div className="d-flex justify-content-center" id="portrait">
+                        <img src={postData[props.id].poster.asset.url} alt="" />
+                    
+                
                     </div>
-                    {categourie == "person" && <ModalPerson id={myId}></ModalPerson>}
-                    {/* <h2>HALLO</h2>
-                    <h2>
-                        {props.vorname} {props.nachname}
-                        {props.id}
-                        {postData && console.log(postData[myId])}
-                    </h2> */}
+                    {postData[props.id].vorname} {postData[props.id].nachname}
                 </div>
-                <div className="overlay"></div>
-            </div>
+            )}
         </div>
     );
 }

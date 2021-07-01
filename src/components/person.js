@@ -10,7 +10,9 @@ export default function Person(props) {
     const [vorname, setVorname] = useState(null);
     const [nachname, setNachname] = useState(null);
     const [id, setId] = useState(null);
+    const [kat, setKat] = useState(null);
     const [animation, setAnimation] = useState("");
+
     useEffect(() => {
         sanityClient
             .fetch(
@@ -22,9 +24,10 @@ export default function Person(props) {
                   `
             )
             .then((data) => setPostData(data))
-            .then((data) => console.log(data))
+            // .then((data) => console.log(data))
             .catch(console.error);
         console.log(postData);
+
         // document.querySelector("#test").addEventListener("click", showData);
     }, []);
 
@@ -39,17 +42,28 @@ export default function Person(props) {
         setShowModal(true);
     }
 
-    function showModalSwitch(e) {
-        console.log(e.target);
+    function showModalSwitch(i) {
+        setAnimation("slide-in-top");
+        setVorname(postData[i].vorname);
+        setNachname(postData[i].nachname);
+        setId(i);
         setShowModal(true);
+        console.log(showModal);
     }
 
     return (
         <div className="row">
-            {console.log(postData)}
             <button onClick={showData}>SHOW ME</button>
             {showModal && (
-                <ModalBox show={true} vorname={vorname} nachname={nachname} id={id} animation={animation}></ModalBox>
+                <ModalBox
+                    show={showModal}
+                    vorname={vorname}
+                    nachname={nachname}
+                    id={id}
+                    cat="person"
+                    animation={animation}
+                    changeState={(state) => setShowModal(state)}
+                ></ModalBox>
             )}
             {postData &&
                 postData.map((e, i) => (
@@ -59,11 +73,7 @@ export default function Person(props) {
                             data-id={i}
                             data-cat="person"
                             onClick={() => {
-                                setAnimation("slide-in-top");
-                                setVorname(postData[i].vorname);
-                                setNachname(postData[i].nachname);
-                                setId(i);
-                                setShowModal(true);
+                                showModalSwitch(i);
                             }}
                         >
                             <i class="bi bi-person-bounding-box"></i>
